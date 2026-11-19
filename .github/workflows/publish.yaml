@@ -1,0 +1,67 @@
+name: Publish Release
+
+on:
+  release:
+    types: [published]
+
+permissions:
+  contents: write
+
+jobs:
+  publish-release:
+    name: Validate and publish release assets
+    # Run only when a draft is actually published (made valid), not for prereleases.
+    if: ${{ !github.event.release.draft && !github.event.release.prerelease }}
+    runs-on: ubuntu-24.04
+    steps:
+      - name: Checkout tag
+        uses: actions/checkout@v4
+        with:
+          ref: ${{ github.event.release.tag_name }}
+          fetch-depth: 0
+
+      - name: Verify tag matches project version
+        run: |
+          TAG="${{ github.event.release.tag_name }}"
+          VERSION="${TAG#v}"
+          CMAKE_VERSION="$(sed -n 's/^[[:space:]]*VERSION[[:space:]]\+\([0-9A-Za-z.+-]\+\).*/\1/p' CMakeLists.txt | head -n1)"
+          APP_VERSION="$(sed -n 's/.*setApplicationVersion(QStringLiteral("\([^"]\+\)").*/\1/p' src/main.cpp | head -n1)"
+          META_VERSION="$(sed -n 's/.*<release version="\([^"]\+\)".*/\1/p' resources/io.github.juangiler.thunderbird-tray.metainfo.xml | head -n1)"
+          echo "tag=$TAG cmake=$CMAKE_VERSION app=$APP_VERSION metainfo=$META_VERSION"
+          if [ "$CMAKE_VERSION" != "$VERSION" ] || [ "$APP_VERSION" != "$VERSION" ] || [ "$META_VERSION" != "$VERSION" ]; then
+            echo "::error::Tag $TAG does not match project versions (expected $VERSION)."
+            exit 1
+          fi
+
+      - name: Install dependencies
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y --no-install-recommends \
+            build-essential cmake ninja-build pkg-config \
+            qt6-base-dev qt6-declarative-dev qt6-tools-dev \
+            qml6-module-org-kde-kirigami \
+            libkf6kirigami-dev kirigami-addons-dev
+
+      - name: Configure
+        run: cmake -S . -B build -G Ninja -DCMAKE_BUILD_TYPE=Release -DBUILD_TESTING=ON
+
+      - name: Build
+        run: cmake --build build --parallel
+
+      - name: Test
+        env:
+          QT_QPA_PLATFORM: offscreen
+        run: ctest --test-dir build --output-on-failure
+
+      - name: Build release assets
+        run: |
+          TAG="${{ github.event.release.tag_name }}"
+          cmake --install build --prefix "dist/thunderbird-tray-${TAG}"
+          tar -C dist -czf "thunderbird-tray-${TAG}-linux-x86_64.tar.gz" "thunderbird-tray-${TAG}"
+
+      - name: Upload assets to published release
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          TAG="${{ github.event.release.tag_name }}"
+          gh release upload "$TAG" "thunderbird-tray-${TAG}-linux-x86_64.tar.gz" --clobber
