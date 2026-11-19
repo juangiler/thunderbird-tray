@@ -33,14 +33,12 @@ Kirigami.ApplicationWindow {
     }
 
     pageStack.initialPage: Kirigami.ScrollablePage {
+        // Kirigami reserves a global header; give it the app name instead of
+        // leaving an empty grey band above the settings cards.
+        title: qsTr("Thunderbird Tray")
+
         ColumnLayout {
             spacing: Kirigami.Units.largeSpacing
-
-            Kirigami.Heading {
-                level: 1
-                text: qsTr("Thunderbird Tray")
-                Layout.fillWidth: true
-            }
 
             Kirigami.InlineMessage {
                 type: Kirigami.MessageType.Information

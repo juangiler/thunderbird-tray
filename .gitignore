@@ -47,3 +47,10 @@ flatpak-build/
 *.flatpak
 *.rpm
 *.AppImage
+
+
+
+# Agents
+AGENTS.md
+.agents/
+*skills*

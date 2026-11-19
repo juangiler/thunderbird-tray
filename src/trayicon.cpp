@@ -8,6 +8,7 @@
 #include "themecolors.h"
 
 #include <QAction>
+#include <QFontMetrics>
 #include <QMenu>
 #include <QPainter>
 #include <QPixmap>
@@ -472,12 +473,17 @@ QIcon TrayIcon::composeIcon() const
         painter.setBrush(badge);
         painter.drawEllipse(centre, kBadgeRadius, kBadgeRadius);
 
+        const QFont font = badgeFont();
         painter.setPen(effectiveTextColor());
-        painter.setFont(badgeFont());
+        painter.setFont(font);
 
         const QString text = m_unreadCount > 99 ? QStringLiteral("99+") : QString::number(m_unreadCount);
-        painter.drawText(QRectF(centre.x() - kBadgeRadius, centre.y() - kBadgeRadius, kBadgeRadius * 2, kBadgeRadius * 2),
-                         Qt::AlignCenter,
+        // Qt::AlignVCenter centres the whole line box (including the font's
+        // descent), which makes digits sit slightly below the badge centre.
+        // Align the glyph bounds themselves instead, for both axes.
+        const QRectF glyphs = QFontMetricsF(font).tightBoundingRect(text);
+        painter.drawText(QPointF(centre.x() - glyphs.center().x(),
+                                 centre.y() - glyphs.center().y()),
                          text);
     }
 

@@ -10,9 +10,29 @@ settings one click away.
 
 ---
 
+## Screenshots
+
+<p align="center">
+  <img src="resources/screenshots/logo.png" width="140" alt="Thunderbird Tray logo">
+</p>
+<p align="center"><sub>Flat monochrome application icon</sub></p>
+
+<p align="center">
+  <img src="resources/screenshots/tray-icon-states.png" width="900" alt="Tray icon states: idle, Thunderbird running, 12 unread, and both together">
+</p>
+<p align="center"><sub>Preview rendered with the <a href="https://github.com/yeyushengfan258/Reversal-icon-theme">Reversal icon theme</a> by <a href="https://github.com/yeyushengfan258">yeyushengfan258</a> — thanks for the beautiful icons! This is just a preview: the tray glyph is not bundled, it follows your current system icon theme, so on your desktop it uses your own icons.</sub></p>
+
+<p align="center">
+  <img src="resources/screenshots/settings-framed.png" width="480" alt="Thunderbird Tray settings window">
+</p>
+<p align="center"><sub>Real settings window in the light theme — Kirigami 6 / Breeze on KDE Plasma</sub></p>
+
+---
+
 ## Features
 
 - Native `QSystemTrayIcon` with a painted unread badge (single tray icon)
+- Tray icon follows your system icon theme (Reversal, Breeze, etc.) — the mail glyph is never bundled, so it always matches your desktop
 - Green indicator dot shows when Thunderbird is running
 - Smooth fade animation while unread mail is pending (configurable)
 - Badge color follows the desktop accent color by default, or can be set manually
@@ -218,7 +238,7 @@ src/
     Main.qml            (initially hidden) window
     SettingsCard.qml    settings UI
 tests/                  parser, model, theme, tray icon, and QML lint tests
-resources/              icon, .desktop file, AppStream metadata
+resources/              icon, .desktop file, AppStream metadata, screenshots/
 ```
 
 `AGEND.md` contains the design document, stack review, feature comparison, and agenda.
