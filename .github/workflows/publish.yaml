@@ -13,7 +13,20 @@ jobs:
     # Run only when a draft is actually published (made valid), not for prereleases.
     if: ${{ !github.event.release.draft && !github.event.release.prerelease }}
     runs-on: ubuntu-24.04
+    container:
+      image: fedora:latest
     steps:
+      - name: Install dependencies
+        run: |
+          dnf -y install \
+            git gcc-c++ cmake ninja-build pkgconf-pkg-config extra-cmake-modules \
+            qt6-qtbase-devel qt6-qtdeclarative-devel qt6-qttools-devel \
+            qt6-qtbase-gui \
+            kf6-kirigami kf6-kirigami-devel \
+            kf6-kirigami-addons kf6-kirigami-addons-devel \
+            gh tar gzip
+          dnf clean all
+
       - name: Checkout tag
         uses: actions/checkout@v4
         with:
@@ -32,15 +45,6 @@ jobs:
             echo "::error::Tag $TAG does not match project versions (expected $VERSION)."
             exit 1
           fi
-
-      - name: Install dependencies
-        run: |
-          sudo apt-get update
-          sudo apt-get install -y --no-install-recommends \
-            build-essential cmake ninja-build pkg-config \
-            qt6-base-dev qt6-declarative-dev qt6-tools-dev \
-            qml6-module-org-kde-kirigami \
-            libkf6kirigami-dev kirigami-addons-dev
 
       - name: Configure
         run: cmake -S . -B build -G Ninja -DCMAKE_BUILD_TYPE=Release -DBUILD_TESTING=ON
