@@ -1,0 +1,12 @@
+[Desktop Entry]
+Type=Application
+Name=Thunderbird Tray
+GenericName=Thunderbird Tray
+Comment=System tray companion for Thunderbird
+Exec=thunderbird-tray
+Icon=io.github.juangiler.thunderbird-tray
+Terminal=false
+Categories=Network;Email;GTK;
+Keywords=thunderbird;mail;email;tray;unread;
+StartupNotify=false
+X-GNOME-Autostart-enabled=true

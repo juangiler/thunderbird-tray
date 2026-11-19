@@ -1,0 +1,49 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<component type="desktop-application">
+  <id>io.github.juangiler.thunderbird-tray</id>
+  <metadata_license>CC0-1.0</metadata_license>
+  <project_license>GPL-3.0-or-later</project_license>
+
+  <name>Thunderbird Tray</name>
+  <summary>System tray companion for Thunderbird</summary>
+
+  <developer id="io.github.juangiler">
+    <name>Juan Giler</name>
+  </developer>
+
+  <url type="homepage">https://github.com/juangiler/thunderbird-tray</url>
+  <url type="bugtracker">https://github.com/juangiler/thunderbird-tray/issues</url>
+  <url type="vcs-browser">https://github.com/juangiler/thunderbird-tray</url>
+
+  <description>
+    <p>
+      Thunderbird Tray keeps an eye on your Thunderbird profiles and shows the
+      number of unread messages directly in the system tray. When new mail
+      arrives the icon blinks until you open Thunderbird.
+    </p>
+    <p>Features:</p>
+    <ul>
+      <li>Unread counter for every monitored inbox</li>
+      <li>Blinking tray icon with an unread badge</li>
+      <li>Quick access to Thunderbird, mail check and settings</li>
+      <li>Supports native, Flatpak and Snap installations of Thunderbird</li>
+    </ul>
+  </description>
+
+  <launchable type="desktop-id">io.github.juangiler.thunderbird-tray.desktop</launchable>
+
+  <categories>
+    <category>Network</category>
+    <category>Email</category>
+  </categories>
+
+  <content_rating type="oars-1.1"/>
+
+  <releases>
+    <release version="1.0.0" date="2026-11-19">
+      <description>
+        <p>First release.</p>
+      </description>
+    </release>
+  </releases>
+</component>

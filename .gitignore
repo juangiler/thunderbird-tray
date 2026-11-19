@@ -1,0 +1,49 @@
+# Build directories
+build/
+build-*/
+cmake-build-*/
+
+# CMake
+CMakeCache.txt
+CMakeFiles/
+CMakeUserPresets.json
+cmake_install.cmake
+compile_commands.json
+CTestTestfile.cmake
+Testing/
+install_manifest.txt
+
+# Qt / KDE generated files
+*.qmlc
+*.jsc
+.qt/
+*.qmltypes
+qmldir.qrc
+
+# Object files and libraries
+*.o
+*.obj
+*.a
+*.so
+*.so.*
+*.dylib
+*.dll
+*.exe
+
+# Editors and IDEs
+.idea/
+.vscode/
+*.kdev4
+*.user
+*.user.*
+
+# OS clutter
+.DS_Store
+Thumbs.db
+*~
+
+# Packaged output
+flatpak-build/
+*.flatpak
+*.rpm
+*.AppImage
