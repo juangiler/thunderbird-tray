@@ -1,0 +1,44 @@
+name: CI
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: ci-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  build-test:
+    name: Build and test
+    runs-on: ubuntu-24.04
+    container:
+      image: fedora:latest
+    steps:
+      - name: Install dependencies
+        run: |
+          dnf -y install \
+            git gcc-c++ cmake ninja-build pkgconf-pkg-config extra-cmake-modules \
+            qt6-qtbase-devel qt6-qtdeclarative-devel qt6-qttools-devel \
+            qt6-qtbase-gui \
+            kf6-kirigami kf6-kirigami-devel \
+            kf6-kirigami-addons kf6-kirigami-addons-devel
+          dnf clean all
+
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Configure
+        run: cmake -S . -B build -G Ninja -DCMAKE_BUILD_TYPE=Release -DBUILD_TESTING=ON
+
+      - name: Build
+        run: cmake --build build --parallel
+
+      - name: Test
+        env:
+          QT_QPA_PLATFORM: offscreen
+        run: ctest --test-dir build --output-on-failure

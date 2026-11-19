@@ -4,7 +4,7 @@
 cmake_minimum_required(VERSION 3.22)
 
 project(thunderbird-tray
-    VERSION 1.0.0
+    VERSION 0.0.1
     DESCRIPTION "System tray companion for Thunderbird on Linux"
     HOMEPAGE_URL "https://github.com/juangiler/thunderbird-tray"
     LANGUAGES CXX)

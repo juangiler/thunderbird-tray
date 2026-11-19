@@ -6,7 +6,14 @@ It shows how many unread messages your monitored mail folders contain, animates
 when new mail arrives, and puts Thunderbird, mail checks, window controls, and
 settings one click away.
 
-![Kirigami 6 / Qt 6 / C++20](https://img.shields.io/badge/stack-Qt%206%20%2B%20Kirigami%206%20%2B%20C%2B%2B20-blue)
+[![CI](https://github.com/juangiler/thunderbird-tray/actions/workflows/ci.yml/badge.svg?branch=main)](https://github.com/juangiler/thunderbird-tray/actions/workflows/ci.yml)
+[![Release](https://img.shields.io/github/v/release/juangiler/thunderbird-tray?display_name=tag&sort=semver)](https://github.com/juangiler/thunderbird-tray/releases)
+[![Release build](https://img.shields.io/github/actions/workflow/status/juangiler/thunderbird-tray/release.yaml?label=release%20build)](https://github.com/juangiler/thunderbird-tray/actions/workflows/release.yaml)
+
+![C++20](https://img.shields.io/badge/C%2B%2B-20-00599C?logo=cplusplus&logoColor=white)
+![Qt 6](https://img.shields.io/badge/Qt-6-41CD52?logo=qt&logoColor=white)
+![KDE Kirigami 6](https://img.shields.io/badge/KDE-Kirigami%206-1D99F3?logo=kde&logoColor=white)
+![CMake](https://img.shields.io/badge/CMake-3.22%2B-064F8C?logo=cmake&logoColor=white)
 
 ---
 
