@@ -69,13 +69,20 @@ jobs:
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: |
           TAG="${GITHUB_REF_NAME}"
+          ASSET="thunderbird-tray-${TAG}-linux-x86_64.tar.gz"
           if gh release view "$TAG" >/dev/null 2>&1; then
-            gh release edit "$TAG" --draft --title "$TAG" --generate-notes
-            gh release upload "$TAG" "thunderbird-tray-${TAG}-linux-x86_64.tar.gz" --clobber
+            gh release upload "$TAG" "$ASSET" --clobber
           else
-            gh release create "$TAG" \
-              --draft \
-              --title "$TAG" \
-              --generate-notes \
-              "thunderbird-tray-${TAG}-linux-x86_64.tar.gz"
+            if gh release create --help 2>&1 | grep -q -- '--generate-notes'; then
+              gh release create "$TAG" \
+                --draft \
+                --title "$TAG" \
+                --generate-notes \
+                "$ASSET"
+            else
+              gh release create "$TAG" \
+                --draft \
+                --title "$TAG" \
+                "$ASSET"
+            fi
           fi
