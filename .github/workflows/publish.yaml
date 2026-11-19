@@ -63,6 +63,9 @@ jobs:
           cmake --install build --prefix "dist/thunderbird-tray-${TAG}"
           tar -C dist -czf "thunderbird-tray-${TAG}-linux-x86_64.tar.gz" "thunderbird-tray-${TAG}"
 
+      - name: Mark workspace safe for git
+        run: git config --global --add safe.directory "$GITHUB_WORKSPACE"
+
       - name: Upload assets to published release
         env:
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
