@@ -5,6 +5,8 @@
 
 #include <QtTest>
 
+#include <cmath>
+
 #include "themecolors.h"
 #include "trayicon.h"
 
@@ -23,11 +25,12 @@ private slots:
     void noBadgeWithoutUnreadMessages();
     void animationFadesTheBadgeSmoothly();
     void runningIndicatorShownWhenThunderbirdIsRunning();
-    void runningIndicatorHiddenWhenThunderbirdIsNotRunning();
+    void runningIndicatorIsGreenOnlyWhenThunderbirdIsRunning();
     void runningIndicatorCoexistsWithUnreadBadge();
     void runningIndicatorTurnsRedWhenThunderbirdStops();
     void runningIndicatorCentredOnMailIconCorner();
     void unreadBadgeIsSmallerAndShiftedRight();
+    void overflowCounterFitsInsideBadge();
 
 private:
     /// A pixel inside the badge, but away from the digits.
@@ -242,7 +245,7 @@ void TestTrayIcon::runningIndicatorShownWhenThunderbirdIsRunning()
              "a green running indicator should be painted in the bottom-left corner");
 }
 
-void TestTrayIcon::runningIndicatorHiddenWhenThunderbirdIsNotRunning()
+void TestTrayIcon::runningIndicatorIsGreenOnlyWhenThunderbirdIsRunning()
 {
     TrayIcon tray;
     tray.setAnimationEnabled(false);
@@ -251,7 +254,7 @@ void TestTrayIcon::runningIndicatorHiddenWhenThunderbirdIsNotRunning()
 
     const QColor pixel = runningPixel(tray.icon().pixmap(64, 64).toImage());
     QVERIFY2(!(pixel.green() > 150 && pixel.green() > pixel.red() + 40 && pixel.alpha() > 200),
-             "no running indicator should be painted when Thunderbird is not running");
+             "the stopped-state indicator should be red, not green");
 }
 
 void TestTrayIcon::runningIndicatorCoexistsWithUnreadBadge()
@@ -311,6 +314,45 @@ void TestTrayIcon::unreadBadgeIsSmallerAndShiftedRight()
     QVERIFY2(!badge.isEmpty(), "the unread badge should be painted");
     QVERIFY2(qAbs(badge.width() - 30) <= 1, "the unread badge should be 30 px wide");
     QVERIFY2(qAbs(badge.center().x() - 48.0) <= 1.0, "the unread badge centre should be at x = 48 px");
+}
+
+void TestTrayIcon::overflowCounterFitsInsideBadge()
+{
+    TrayIcon tray;
+    tray.setAnimationEnabled(false);
+    tray.setBadgeColorFollowsAccent(false);
+    tray.setBadgeColor(QColor(0, 0, 0));
+    tray.setBadgeTextColor(QColor(Qt::white));
+
+    // Same badge and base icon in both renders: only the digits differ.
+    tray.setUnreadCount(1);
+    const QImage one = tray.icon().pixmap(64, 64).toImage();
+    tray.setUnreadCount(120); // rendered as "99+"
+    const QImage overflow = tray.icon().pixmap(64, 64).toImage();
+
+    // The badge is a 30 px circle centred at (48, 16). Leave half a pixel
+    // of antialiasing margin; every glyph pixel must stay inside that circle.
+    constexpr qreal centreX = 48.0;
+    constexpr qreal centreY = 16.0;
+    constexpr qreal maxRadius = 14.5;
+
+    int changed = 0;
+    qreal worst = 0.0;
+    for (int y = 0; y < 64; ++y) {
+        for (int x = 0; x < 64; ++x) {
+            if (one.pixelColor(x, y) == overflow.pixelColor(x, y)) {
+                continue;
+            }
+            ++changed;
+            const qreal distance = std::hypot(x - centreX, y - centreY);
+            worst = qMax(worst, distance);
+        }
+    }
+
+    QVERIFY2(changed > 0, "the overflow counter should be painted");
+    QVERIFY2(worst <= maxRadius,
+             qPrintable(QStringLiteral("99+ glyphs leave the badge: farthest pixel at %1 px")
+                            .arg(worst, 0, 'f', 2)));
 }
 
 int main(int argc, char *argv[])

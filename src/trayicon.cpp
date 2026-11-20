@@ -20,8 +20,8 @@ namespace
 {
 /// Logical size the icon is rendered at before it is scaled by the tray.
 constexpr int kRenderSize = 64;
-/// Radius of the unread badge: a 30 px circle in the 64 px icon.
-constexpr qreal kBadgeRadius = 15.0;
+/// Radius of the unread badge: a 30 px circle in a 64 px icon.
+constexpr qreal kBadgeRadius = kRenderSize * (15.0 / 64.0);
 /// Radius of the "Thunderbird is running" indicator.
 constexpr qreal kRunningDotRadius = kRenderSize * 0.11;
 /// The indicator is centred on the bottom-left corner of the envelope.
@@ -474,11 +474,24 @@ QIcon TrayIcon::composeIcon() const
         painter.setBrush(badge);
         painter.drawEllipse(centre, kBadgeRadius, kBadgeRadius);
 
-        const QFont font = badgeFont();
+        const QString text = m_unreadCount > 99 ? QStringLiteral("99+") : QString::number(m_unreadCount);
+        QFont font = badgeFont();
+
+        // Long counters (and large user-configured fonts) must not spill out
+        // of the badge or get clipped by the 64 px icon. Shrink until the
+        // glyph box fits inside the circle with a small margin.
+        const qreal maxHalfDiagonal = kBadgeRadius - 1.0;
+        while (font.pixelSize() > 6) {
+            const QRectF candidate = QFontMetricsF(font).tightBoundingRect(text);
+            if (std::hypot(candidate.width() / 2.0, candidate.height() / 2.0) <= maxHalfDiagonal) {
+                break;
+            }
+            font.setPixelSize(font.pixelSize() - 1);
+        }
+
         painter.setPen(effectiveTextColor());
         painter.setFont(font);
 
-        const QString text = m_unreadCount > 99 ? QStringLiteral("99+") : QString::number(m_unreadCount);
         // Qt::AlignVCenter centres the whole line box (including the font's
         // descent), which makes digits sit slightly below the badge centre.
         // Align the glyph bounds themselves instead, for both axes.
