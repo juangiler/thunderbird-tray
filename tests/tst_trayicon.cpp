@@ -25,18 +25,52 @@ private slots:
     void runningIndicatorShownWhenThunderbirdIsRunning();
     void runningIndicatorHiddenWhenThunderbirdIsNotRunning();
     void runningIndicatorCoexistsWithUnreadBadge();
+    void runningIndicatorTurnsRedWhenThunderbirdStops();
+    void runningIndicatorCentredOnMailIconCorner();
+    void unreadBadgeIsSmallerAndShiftedRight();
 
 private:
     /// A pixel inside the badge, but away from the digits.
     static QColor badgePixel(const QImage &image)
     {
-        return image.pixelColor(54, 10);
+        // Inside the 30 px badge, but clear of the digits.
+        return image.pixelColor(59, 16);
     }
 
     /// A pixel inside the "Thunderbird is running" indicator.
     static QColor runningPixel(const QImage &image)
     {
         return image.pixelColor(9, 55);
+    }
+
+    /// Bounding box of the pixels painted with a distinctive colour.
+    static QRectF colouredRegion(const QImage &image, const QColor &colour)
+    {
+        int minX = image.width();
+        int minY = image.height();
+        int maxX = -1;
+        int maxY = -1;
+        for (int y = 0; y < image.height(); ++y) {
+            for (int x = 0; x < image.width(); ++x) {
+                const QColor pixel = image.pixelColor(x, y);
+                if (pixel.alpha() < 200) {
+                    continue;
+                }
+                if (qAbs(pixel.red() - colour.red()) > 24
+                    || qAbs(pixel.green() - colour.green()) > 24
+                    || qAbs(pixel.blue() - colour.blue()) > 24) {
+                    continue;
+                }
+                minX = qMin(minX, x);
+                minY = qMin(minY, y);
+                maxX = qMax(maxX, x);
+                maxY = qMax(maxY, y);
+            }
+        }
+        if (maxX < 0) {
+            return QRectF();
+        }
+        return QRectF(minX, minY, maxX - minX + 1, maxY - minY + 1);
     }
 };
 
@@ -238,6 +272,45 @@ void TestTrayIcon::runningIndicatorCoexistsWithUnreadBadge()
     QCOMPARE(badge.blue(), 0);
     QVERIFY2(running.green() > 150 && running.green() > running.red() + 40 && running.alpha() > 200,
              "the running indicator should be visible together with the unread badge");
+}
+
+void TestTrayIcon::runningIndicatorTurnsRedWhenThunderbirdStops()
+{
+    TrayIcon tray;
+    tray.setAnimationEnabled(false);
+    tray.setUnreadCount(0);
+    tray.setThunderbirdRunning(false);
+
+    const QColor pixel = runningPixel(tray.icon().pixmap(64, 64).toImage());
+    QVERIFY2(pixel.red() > 150 && pixel.red() > pixel.green() + 40 && pixel.alpha() > 200,
+             "a red indicator should be painted when Thunderbird is not running");
+}
+
+void TestTrayIcon::runningIndicatorCentredOnMailIconCorner()
+{
+    TrayIcon tray;
+    tray.setAnimationEnabled(false);
+    tray.setUnreadCount(0);
+    tray.setThunderbirdRunning(true);
+
+    const QRectF dot = colouredRegion(tray.icon().pixmap(64, 64).toImage(), QColor(46, 204, 113));
+    QVERIFY2(!dot.isEmpty(), "the running indicator should be painted");
+    QVERIFY2(qAbs(dot.center().x() - 7.0) <= 1.5, "the indicator should be centred on the left edge of the envelope");
+    QVERIFY2(qAbs(dot.center().y() - 51.0) <= 1.5, "the indicator should be centred on the bottom edge of the envelope");
+}
+
+void TestTrayIcon::unreadBadgeIsSmallerAndShiftedRight()
+{
+    TrayIcon tray;
+    tray.setAnimationEnabled(false);
+    tray.setBadgeColorFollowsAccent(false);
+    tray.setBadgeColor(QColor(255, 0, 255));
+    tray.setUnreadCount(7);
+
+    const QRectF badge = colouredRegion(tray.icon().pixmap(64, 64).toImage(), QColor(255, 0, 255));
+    QVERIFY2(!badge.isEmpty(), "the unread badge should be painted");
+    QVERIFY2(qAbs(badge.width() - 30) <= 1, "the unread badge should be 30 px wide");
+    QVERIFY2(qAbs(badge.center().x() - 48.0) <= 1.0, "the unread badge centre should be at x = 48 px");
 }
 
 int main(int argc, char *argv[])

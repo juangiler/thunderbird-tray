@@ -40,7 +40,7 @@ settings one click away.
 
 - Native `QSystemTrayIcon` with a painted unread badge (single tray icon)
 - Tray icon follows your system icon theme (Reversal, Breeze, etc.) — the mail glyph is never bundled, so it always matches your desktop
-- Green indicator dot shows when Thunderbird is running
+- Status dot centred on the envelope corner: green while Thunderbird runs, red when it does not
 - Smooth fade animation while unread mail is pending (configurable)
 - Badge color follows the desktop accent color by default, or can be set manually
 - Per-account badge colors: with one badge, the account with the most unread mail decides its color

@@ -20,10 +20,13 @@ namespace
 {
 /// Logical size the icon is rendered at before it is scaled by the tray.
 constexpr int kRenderSize = 64;
-/// Radius of the unread badge.
-constexpr qreal kBadgeRadius = kRenderSize * 0.30;
+/// Radius of the unread badge: a 30 px circle in the 64 px icon.
+constexpr qreal kBadgeRadius = 15.0;
 /// Radius of the "Thunderbird is running" indicator.
 constexpr qreal kRunningDotRadius = kRenderSize * 0.11;
+/// The indicator is centred on the bottom-left corner of the envelope.
+constexpr qreal kRunningDotX = kRenderSize * 0.11;
+constexpr qreal kRunningDotY = kRenderSize * 0.80;
 /// The badge fades between fully opaque and this alpha value.
 constexpr int kMinimumBadgeAlpha = 60;
 /// The animation is drawn with this many frames per second.
@@ -449,17 +452,15 @@ QIcon TrayIcon::composeIcon() const
     painter.setRenderHint(QPainter::SmoothPixmapTransform, true);
     painter.drawPixmap(0, 0, base.pixmap(QSize(kRenderSize, kRenderSize)));
 
-    if (m_thunderbirdRunning) {
-        // A small green dot in the bottom-left corner indicates that
-        // Thunderbird is running.
-        const QPointF dotCentre(kRunningDotRadius + 2.0,
-                                kRenderSize - kRunningDotRadius - 2.0);
-        painter.setPen(Qt::NoPen);
-        painter.setBrush(QColor(46, 204, 113));
-        painter.drawEllipse(dotCentre, kRunningDotRadius, kRunningDotRadius);
-    }
+    // A dot centred on the bottom-left corner of the envelope reports the
+    // state of Thunderbird: green while it is running, red when it is not.
+    painter.setPen(Qt::NoPen);
+    painter.setBrush(m_thunderbirdRunning ? QColor(46, 204, 113)  // green
+                                          : QColor(231, 76, 60));  // red
+    painter.drawEllipse(QPointF(kRunningDotX, kRunningDotY), kRunningDotRadius, kRunningDotRadius);
 
     if (hasUnread) {
+        // The 1 px inset puts the centre of the badge at x = 48 px.
         const QPointF centre(kRenderSize - kBadgeRadius - 1.0, kBadgeRadius + 1.0);
 
         QColor badge = effectiveBadgeColor();
