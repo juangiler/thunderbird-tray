@@ -149,7 +149,7 @@ int main(int argc, char *argv[])
     app.setOrganizationDomain(QStringLiteral("io.github.juangiler"));
     app.setApplicationName(QStringLiteral("thunderbird-tray"));
     app.setApplicationDisplayName(QStringLiteral("Thunderbird Tray"));
-    app.setApplicationVersion(QStringLiteral("0.0.1"));
+    app.setApplicationVersion(QStringLiteral("0.0.2"));
     app.setDesktopFileName(QStringLiteral("io.github.juangiler.thunderbird-tray"));
     app.setQuitOnLastWindowClosed(false);
     app.setWindowIcon(QIcon::fromTheme(QStringLiteral("mail-unread"), QIcon(QStringLiteral(":/resources/icons/thunderbird-tray.svg"))));
