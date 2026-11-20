@@ -25,7 +25,7 @@ settings one click away.
 <p align="center"><sub>Flat monochrome application icon</sub></p>
 
 <p align="center">
-  <img src="resources/screenshots/tray-icon-states.png" width="900" alt="Tray icon states: idle, Thunderbird running, 12 unread, and both together">
+  <img src="resources/screenshots/tray-icon-states.png" width="256" alt="Tray icon with an unread badge and a green Thunderbird-running indicator">
 </p>
 <p align="center"><sub>Preview rendered with the <a href="https://github.com/yeyushengfan258/Reversal-icon-theme">Reversal icon theme</a> by <a href="https://github.com/yeyushengfan258">yeyushengfan258</a> — thanks for the beautiful icons! This is just a preview: the tray glyph is not bundled, it follows your current system icon theme, so on your desktop it uses your own icons.</sub></p>
 
